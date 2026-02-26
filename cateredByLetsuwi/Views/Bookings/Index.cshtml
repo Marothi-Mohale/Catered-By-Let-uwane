@@ -1,0 +1,196 @@
+@model IEnumerable<cateredByLetsuwi.Models.Booking>
+@using cateredByLetsuwi.Models.Enums
+
+@{
+    ViewData["Title"] = "Booking Management Dashboard";
+}
+
+<div class="container-fluid mt-4">
+
+    <h2 class="mb-4 fw-bold">📊 Booking Management Dashboard</h2>
+
+    <!-- ============================= -->
+    <!-- KPI CARDS -->
+    <!-- ============================= -->
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Revenue</h6>
+                    <h3 class="fw-bold text-success">
+                        R @ViewBag.TotalRevenue
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Bookings</h6>
+                    <h3 class="fw-bold">
+                        @ViewBag.TotalBookings
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending Bookings</h6>
+                    <h3 class="fw-bold text-warning">
+                        @ViewBag.PendingBookings
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Unpaid Bookings</h6>
+                    <h3 class="fw-bold text-danger">
+                        @ViewBag.UnpaidBookings
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- BOOKINGS TABLE -->
+    <!-- ============================= -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">All Bookings</h5>
+                <a asp-action="Create" class="btn btn-primary rounded-3">
+                    + New Booking
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Service</th>
+                            <th>Event Date</th>
+                            <th>Guests</th>
+                            <th>Total</th>
+                            <th>Booking Status</th>
+                            <th>Payment Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var booking in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@booking.CustomerName</strong><br />
+                                    <small class="text-muted">@booking.Email</small>
+                                </td>
+
+                                <td>@booking.Service?.Name</td>
+
+                                <td>
+                                    @booking.EventDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>@booking.NumberOfGuests</td>
+
+                                <td class="fw-semibold">
+                                    R @booking.TotalPrice
+                                </td>
+
+                                <td>
+                                    @if (booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                    }
+                                    else if (booking.BookingStatus == BookingStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-primary">
+                                            Confirmed
+                                        </span>
+                                    }
+                                    else if (booking.BookingStatus == BookingStatus.Completed)
+                                    {
+                                        <span class="badge bg-success">
+                                            Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Cancelled
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (booking.PaymentStatus == PaymentStatus.Paid)
+                                    {
+                                        <span class="badge bg-success">
+                                            Paid
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Unpaid
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <form asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="id" value="@booking.Id" />
+
+                                        <select name="bookingStatus" class="form-select form-select-sm">
+                                            @foreach (var status in Enum.GetValues(typeof(BookingStatus)))
+                                            {
+                                                <option value="@status"
+                                                        selected="@(status.Equals(booking.BookingStatus) ? "selected" : null)">
+                                                    @status
+                                                </option>
+                                            }
+                                        </select>
+
+                                        <select name="paymentStatus" class="form-select form-select-sm">
+                                            @foreach (var status in Enum.GetValues(typeof(PaymentStatus)))
+                                            {
+                                                <option value="@status"
+                                                        selected="@(status.Equals(booking.PaymentStatus) ? "selected" : null)">
+                                                    @status
+                                                </option>
+                                            }
+                                        </select>
+
+                                        <button type="submit" class="btn btn-sm btn-dark">
+                                            Update
+                                        </button>
+                                    </form>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>

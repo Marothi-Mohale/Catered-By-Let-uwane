@@ -1,0 +1,66 @@
+@model cateredByLetsuwi.Models.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h2>Business Overview</h2>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Total Bookings</h5>
+            <h3>@Model.TotalBookings</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Upcoming Events</h5>
+            <h3>@Model.UpcomingBookings</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Unpaid Bookings</h5>
+            <h3>@Model.UnpaidBookings</h3>
+        </div>
+    </div>
+
+</div>
+
+<br />
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Total Revenue</h5>
+            <h3>R @Model.TotalRevenue</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Revenue This Month</h5>
+            <h3>R @Model.RevenueThisMonth</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow">
+            <h5>Average Booking Value</h5>
+            <h3>R @Model.AverageBookingValue</h3>
+        </div>
+    </div>
+
+</div>
+
+<br />
+
+<div class="card p-3 shadow">
+    <h5>Most Popular Service</h5>
+    <h4>@Model.MostPopularService</h4>
+</div>

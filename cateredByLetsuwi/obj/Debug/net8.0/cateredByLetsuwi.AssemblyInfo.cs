@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("cateredByLetsuwi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+909b11799ec0a51102cf269ed73716e007a75736")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac11bfc653211132fced86c7aebeed0799026478")]
 [assembly: System.Reflection.AssemblyProductAttribute("cateredByLetsuwi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("cateredByLetsuwi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

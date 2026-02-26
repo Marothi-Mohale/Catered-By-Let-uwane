@@ -1,0 +1,18 @@
+@model IEnumerable<cateredByLetsuwi.Models.Service>
+
+<h2 class="mb-4">Our Catering Services</h2>
+
+<div class="row">
+@foreach (var item in Model)
+{
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">@item.Name</h5>
+                <p class="card-text">@item.Description</p>
+                <h6 class="text-success">R @item.Price</h6>
+            </div>
+        </div>
+    </div>
+}
+</div>

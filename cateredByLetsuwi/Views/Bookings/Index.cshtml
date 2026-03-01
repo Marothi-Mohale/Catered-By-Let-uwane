@@ -3,56 +3,72 @@
 
 @{
     ViewData["Title"] = "Booking Management Dashboard";
+
+    decimal totalRevenue = ViewBag.TotalRevenue ?? 0;
+    int totalBookings = ViewBag.TotalBookings ?? 0;
+    int pendingBookings = ViewBag.PendingBookings ?? 0;
+
+    decimal outstandingRevenue = Model
+        .Where(b => b.PaymentStatus != PaymentStatus.Paid)
+        .Sum(b => b.TotalPrice - b.AmountPaid);
 }
 
 <div class="container-fluid mt-4">
 
-    <h2 class="mb-4 fw-bold">📊 Booking Management Dashboard</h2>
-
-    <!-- ============================= -->
-    <!-- KPI CARDS -->
-    <!-- ============================= -->
+    <!-- ========================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================= -->
     <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold">Booking Management Dashboard</h2>
+            <p class="text-muted">Operational overview of all catering bookings</p>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- KPI CARDS -->
+    <!-- ========================= -->
+    <div class="row g-4 mb-4">
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Revenue</h6>
+                    <h6 class="text-muted">Total Revenue (Paid)</h6>
                     <h3 class="fw-bold text-success">
-                        R @ViewBag.TotalRevenue
+                        R @totalRevenue.ToString("N2")
                     </h3>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Outstanding Revenue</h6>
+                    <h3 class="fw-bold text-danger">
+                        R @outstandingRevenue.ToString("N2")
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="text-muted">Total Bookings</h6>
                     <h3 class="fw-bold">
-                        @ViewBag.TotalBookings
+                        @totalBookings
                     </h3>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="text-muted">Pending Bookings</h6>
                     <h3 class="fw-bold text-warning">
-                        @ViewBag.PendingBookings
-                    </h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="text-muted">Unpaid Bookings</h6>
-                    <h3 class="fw-bold text-danger">
-                        @ViewBag.UnpaidBookings
+                        @pendingBookings
                     </h3>
                 </div>
             </div>
@@ -60,19 +76,11 @@
 
     </div>
 
-
-    <!-- ============================= -->
+    <!-- ========================= -->
     <!-- BOOKINGS TABLE -->
-    <!-- ============================= -->
-    <div class="card shadow-sm border-0 rounded-4">
+    <!-- ========================= -->
+    <div class="card shadow-sm border-0">
         <div class="card-body">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">All Bookings</h5>
-                <a asp-action="Create" class="btn btn-primary rounded-3">
-                    + New Booking
-                </a>
-            </div>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -82,17 +90,22 @@
                             <th>Customer</th>
                             <th>Service</th>
                             <th>Event Date</th>
-                            <th>Guests</th>
-                            <th>Total</th>
+                            <th>Total Price</th>
+                            <th>Paid</th>
                             <th>Booking Status</th>
                             <th>Payment Status</th>
-                            <th>Actions</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         @foreach (var booking in Model)
                         {
+                            var balance = booking.TotalPrice - booking.AmountPaid;
+                            var paidPercent = booking.TotalPrice == 0
+                                ? 0
+                                : (booking.AmountPaid / booking.TotalPrice) * 100;
+
                             <tr>
                                 <td>
                                     <strong>@booking.CustomerName</strong><br />
@@ -105,84 +118,90 @@
                                     @booking.EventDate.ToString("dd MMM yyyy")
                                 </td>
 
-                                <td>@booking.NumberOfGuests</td>
+                                <td>
+                                    R @booking.TotalPrice.ToString("N2")
+                                </td>
 
-                                <td class="fw-semibold">
-                                    R @booking.TotalPrice
+                                <td>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success"
+                                             role="progressbar"
+                                             style="width: @paidPercent%"
+                                             aria-valuenow="@paidPercent"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small>
+                                        R @booking.AmountPaid.ToString("N2")
+                                        / R @booking.TotalPrice.ToString("N2")
+                                    </small>
                                 </td>
 
                                 <td>
                                     @if (booking.BookingStatus == BookingStatus.Pending)
                                     {
-                                        <span class="badge bg-warning text-dark">
-                                            Pending
-                                        </span>
+                                        <span class="badge bg-warning text-dark">Pending</span>
                                     }
                                     else if (booking.BookingStatus == BookingStatus.Confirmed)
                                     {
-                                        <span class="badge bg-primary">
-                                            Confirmed
-                                        </span>
+                                        <span class="badge bg-primary">Confirmed</span>
                                     }
                                     else if (booking.BookingStatus == BookingStatus.Completed)
                                     {
-                                        <span class="badge bg-success">
-                                            Completed
-                                        </span>
+                                        <span class="badge bg-success">Completed</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">
-                                            Cancelled
-                                        </span>
+                                        <span class="badge bg-danger">Cancelled</span>
                                     }
                                 </td>
 
                                 <td>
                                     @if (booking.PaymentStatus == PaymentStatus.Paid)
                                     {
-                                        <span class="badge bg-success">
-                                            Paid
-                                        </span>
+                                        <span class="badge bg-success">Paid</span>
+                                    }
+                                    else if (booking.PaymentStatus == PaymentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger">
-                                            Unpaid
-                                        </span>
+                                        <span class="badge bg-danger">Unpaid</span>
                                     }
                                 </td>
 
-                                <td>
-                                    <form asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+                                <td class="text-end">
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
                                         <input type="hidden" name="id" value="@booking.Id" />
 
-                                        <select name="bookingStatus" class="form-select form-select-sm">
-                                            @foreach (var status in Enum.GetValues(typeof(BookingStatus)))
+                                        <select name="bookingStatus" class="form-select form-select-sm mb-1">
+                                            @foreach (BookingStatus status in Enum.GetValues(typeof(BookingStatus)))
                                             {
                                                 <option value="@status"
-                                                        selected="@(status.Equals(booking.BookingStatus) ? "selected" : null)">
+                                                        selected="@(booking.BookingStatus == status)">
                                                     @status
                                                 </option>
                                             }
                                         </select>
 
-                                        <select name="paymentStatus" class="form-select form-select-sm">
-                                            @foreach (var status in Enum.GetValues(typeof(PaymentStatus)))
+                                        <select name="paymentStatus" class="form-select form-select-sm mb-1">
+                                            @foreach (PaymentStatus status in Enum.GetValues(typeof(PaymentStatus)))
                                             {
                                                 <option value="@status"
-                                                        selected="@(status.Equals(booking.PaymentStatus) ? "selected" : null)">
+                                                        selected="@(booking.PaymentStatus == status)">
                                                     @status
                                                 </option>
                                             }
                                         </select>
 
-                                        <button type="submit" class="btn btn-sm btn-dark">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-dark w-100">
                                             Update
                                         </button>
                                     </form>
                                 </td>
-
                             </tr>
                         }
                     </tbody>

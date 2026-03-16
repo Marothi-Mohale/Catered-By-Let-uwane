@@ -17,9 +17,10 @@ namespace cateredByLetsuwi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = null)
+        public IActionResult Login(string? returnUrl = null, bool denied = false)
         {
-            ViewData["ReturnUrl"] = returnUrl ?? "/Bookings";
+            ViewData["ReturnUrl"] = returnUrl ?? "/Admin";
+            ViewData["AccessDenied"] = denied;
             return View();
         }
 
@@ -34,7 +35,7 @@ namespace cateredByLetsuwi.Controllers
             if (string.IsNullOrWhiteSpace(adminUser) || string.IsNullOrWhiteSpace(adminPass))
             {
                 ModelState.AddModelError("", "Admin credentials are not configured.");
-                ViewData["ReturnUrl"] = returnUrl ?? "/Bookings";
+                ViewData["ReturnUrl"] = returnUrl ?? "/Admin";
                 return View();
             }
 
@@ -56,11 +57,11 @@ namespace cateredByLetsuwi.Controllers
                 if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
-                return Redirect("/Bookings");
+                return RedirectToAction("Index", "Admin");
             }
 
             ModelState.AddModelError("", "Invalid username or password.");
-            ViewData["ReturnUrl"] = returnUrl ?? "/Bookings";
+            ViewData["ReturnUrl"] = returnUrl ?? "/Admin";
             return View();
         }
 

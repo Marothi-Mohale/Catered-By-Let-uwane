@@ -42,6 +42,24 @@ builder.Services
         options.AccessDeniedPath = "/Auth/Login";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
+
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                var returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+                var redirectUri = $"/Auth/Login?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                context.Response.Redirect(redirectUri);
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                var returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+                var redirectUri = $"/Auth/Login?returnUrl={Uri.EscapeDataString(returnUrl)}&denied=true";
+                context.Response.Redirect(redirectUri);
+                return Task.CompletedTask;
+            }
+        };
     });
 
 // Authorization Policy: AdminOnly

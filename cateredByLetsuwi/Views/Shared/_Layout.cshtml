@@ -36,7 +36,7 @@
                         @if (User?.Identity?.IsAuthenticated == true && User.HasClaim("IsAdmin", "true"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link lux-nav-link" asp-controller="Bookings" asp-action="Index">Dashboard</a>
+                                <a class="nav-link lux-nav-link" asp-controller="Admin" asp-action="Index">Dashboard</a>
                             </li>
                         }
                     </ul>

@@ -1,0 +1,59 @@
+@model cateredByLetsuwi.Models.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Admin Dashboard</h1>
+            <p class="text-secondary mb-0">Quick overview and shortcuts for operations.</p>
+        </div>
+        <a class="btn btn-luxury" asp-controller="Bookings" asp-action="Index">Open Bookings Dashboard</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="lux-card p-3 h-100">
+                <div class="small text-secondary">Total Bookings</div>
+                <div class="h4 mb-0">@Model.TotalBookings</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="lux-card p-3 h-100">
+                <div class="small text-secondary">Upcoming</div>
+                <div class="h4 mb-0">@Model.UpcomingBookings</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="lux-card p-3 h-100">
+                <div class="small text-secondary">Unpaid</div>
+                <div class="h4 mb-0">@Model.UnpaidBookings</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="lux-card p-3 h-100">
+                <div class="small text-secondary">Top Service</div>
+                <div class="h6 mb-0">@(string.IsNullOrWhiteSpace(Model.MostPopularService) ? "N/A" : Model.MostPopularService)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lux-card p-3">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="small text-secondary">Total Revenue</div>
+                <div class="h5 mb-0">R @Model.TotalRevenue.ToString("N2")</div>
+            </div>
+            <div class="col-md-4">
+                <div class="small text-secondary">Revenue This Month</div>
+                <div class="h5 mb-0">R @Model.RevenueThisMonth.ToString("N2")</div>
+            </div>
+            <div class="col-md-4">
+                <div class="small text-secondary">Average Booking Value</div>
+                <div class="h5 mb-0">R @Model.AverageBookingValue.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+</div>

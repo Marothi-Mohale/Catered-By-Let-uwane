@@ -8,8 +8,7 @@ using cateredByLetsuwi.Models.Enums;
 
 namespace cateredByLetsuwi.Controllers
 {
-    // ✅ Protect everything by default (Admin dashboard + status updates)
-    [Authorize(Policy = "AdminOnly")] // or: [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,9 +18,7 @@ namespace cateredByLetsuwi.Controllers
             _context = context;
         }
 
-        // =========================================
-        // ADMIN DASHBOARD - List All Bookings
-        // =========================================
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Index()
         {
             var bookings = await _context.Bookings
@@ -29,7 +26,6 @@ namespace cateredByLetsuwi.Controllers
                 .OrderByDescending(b => b.EventDate)
                 .ToListAsync();
 
-            // ===== Business Metrics (SQLite-safe because computed in memory) =====
             ViewBag.TotalRevenue = bookings
                 .Where(b => b.PaymentStatus == PaymentStatus.Paid)
                 .Sum(b => b.TotalPrice);
@@ -45,9 +41,6 @@ namespace cateredByLetsuwi.Controllers
             return View(bookings);
         }
 
-        // =========================================
-        // PUBLIC BOOKING FORM - GET
-        // =========================================
         [AllowAnonymous]
         public IActionResult Create()
         {
@@ -55,9 +48,6 @@ namespace cateredByLetsuwi.Controllers
             return View();
         }
 
-        // =========================================
-        // PUBLIC BOOKING FORM - POST
-        // =========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -81,17 +71,10 @@ namespace cateredByLetsuwi.Controllers
                 return View(booking);
             }
 
-            // ==============================
-            // BUSINESS LOGIC
-            // ==============================
             booking.TotalPrice = service.Price * booking.NumberOfGuests;
             booking.BookingDate = DateTime.UtcNow;
-
-            // Booking starts as pending until admin confirms / payment comes in
             booking.BookingStatus = BookingStatus.Pending;
             booking.PaymentStatus = PaymentStatus.Pending;
-
-            // Payment fields start empty
             booking.PaymentDate = null;
             booking.PaymentReference = null;
             booking.PaymentMethod = null;
@@ -99,16 +82,12 @@ namespace cateredByLetsuwi.Controllers
             _context.Add(booking);
             await _context.SaveChangesAsync();
 
-            // ✅ Public users shouldn't be redirected into admin dashboard
-            // You can change this to a "ThankYou" page later.
             return RedirectToAction(nameof(Create));
         }
 
-        // =========================================
-        // ADMIN - Update Status / Payment
-        // =========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateStatus(
             int id,
             BookingStatus bookingStatus,
@@ -122,24 +101,18 @@ namespace cateredByLetsuwi.Controllers
             if (booking == null)
                 return NotFound();
 
-            // Update payment status
             booking.PaymentStatus = paymentStatus;
 
             if (paymentStatus == PaymentStatus.Paid)
             {
-                // If paid -> confirm booking automatically
                 booking.BookingStatus = BookingStatus.Confirmed;
-
                 booking.PaymentDate = DateTime.UtcNow;
                 booking.PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? null : paymentMethod.Trim();
                 booking.PaymentReference = string.IsNullOrWhiteSpace(paymentReference) ? null : paymentReference.Trim();
             }
             else
             {
-                // Otherwise allow admin to set booking status manually
                 booking.BookingStatus = bookingStatus;
-
-                // Only clear payment details if it's NOT paid
                 booking.PaymentDate = null;
                 booking.PaymentMethod = null;
                 booking.PaymentReference = null;
@@ -149,9 +122,6 @@ namespace cateredByLetsuwi.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================================
-        // Helper: Populate Service Dropdown
-        // =========================================
         private void PopulateServicesDropDownList(object? selectedService = null)
         {
             var servicesQuery = _context.Services

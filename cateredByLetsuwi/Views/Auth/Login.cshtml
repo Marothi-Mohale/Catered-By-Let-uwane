@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Admin Login";
-    var returnUrl = (string?)ViewData["ReturnUrl"] ?? "/Bookings";
+    var returnUrl = (string?)ViewData["ReturnUrl"] ?? "/Admin";
+    var accessDenied = (bool?)ViewData["AccessDenied"] == true;
 }
 
 <div class="row justify-content-center mt-5">
@@ -10,6 +11,13 @@
                 <h4 class="mb-0">Admin Login</h4>
             </div>
             <div class="card-body">
+                @if (accessDenied)
+                {
+                    <div class="alert alert-warning" role="alert">
+                        Please sign in with an admin account to access that page.
+                    </div>
+                }
+
                 <form method="post" asp-controller="Auth" asp-action="Login">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="returnUrl" value="@returnUrl" />

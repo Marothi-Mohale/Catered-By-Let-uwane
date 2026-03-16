@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using cateredByLetsuwi.Data;
 using cateredByLetsuwi.Models;
 using cateredByLetsuwi.Models.Enums;
+using cateredByLetsuwi.Models.ViewModels;
 
 namespace cateredByLetsuwi.Controllers
 {
@@ -26,17 +27,11 @@ namespace cateredByLetsuwi.Controllers
                 .OrderByDescending(b => b.EventDate)
                 .ToListAsync();
 
-            ViewBag.TotalRevenue = bookings
-                .Where(b => b.PaymentStatus == PaymentStatus.Paid)
-                .Sum(b => b.TotalPrice);
-
+            // Compute in-memory for SQLite-safe decimal handling.
+            ViewBag.TotalRevenue = bookings.Sum(GetCollectedAmount);
             ViewBag.TotalBookings = bookings.Count;
-
-            ViewBag.PendingBookings = bookings
-                .Count(b => b.BookingStatus == BookingStatus.Pending);
-
-            ViewBag.UnpaidBookings = bookings
-                .Count(b => b.PaymentStatus == PaymentStatus.Pending);
+            ViewBag.PendingBookings = bookings.Count(b => b.BookingStatus == BookingStatus.Pending);
+            ViewBag.UnpaidBookings = bookings.Count(b => b.PaymentStatus != PaymentStatus.Paid);
 
             return View(bookings);
         }
@@ -75,6 +70,7 @@ namespace cateredByLetsuwi.Controllers
             booking.BookingDate = DateTime.UtcNow;
             booking.BookingStatus = BookingStatus.Pending;
             booking.PaymentStatus = PaymentStatus.Pending;
+            booking.AmountPaid = 0;
             booking.PaymentDate = null;
             booking.PaymentReference = null;
             booking.PaymentMethod = null;
@@ -83,6 +79,94 @@ namespace cateredByLetsuwi.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Create));
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> RecordPayment(int id)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.Service)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            var model = new RecordPaymentViewModel
+            {
+                BookingId = booking.Id,
+                CustomerName = booking.CustomerName,
+                ServiceName = booking.Service?.Name ?? "N/A",
+                TotalPrice = booking.TotalPrice,
+                AmountPaid = booking.AmountPaid,
+                PaymentStatus = booking.PaymentStatus,
+                PaymentMethod = booking.PaymentMethod,
+                PaymentReference = booking.PaymentReference,
+                PaymentDate = booking.PaymentDate
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> RecordPayment(RecordPaymentViewModel model)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.Service)
+                .FirstOrDefaultAsync(b => b.Id == model.BookingId);
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            if (model.AmountPaid < 0)
+            {
+                ModelState.AddModelError(nameof(model.AmountPaid), "Amount paid cannot be negative.");
+            }
+
+            if (model.AmountPaid > booking.TotalPrice)
+            {
+                ModelState.AddModelError(nameof(model.AmountPaid), "Amount paid cannot exceed total booking price.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.CustomerName = booking.CustomerName;
+                model.ServiceName = booking.Service?.Name ?? "N/A";
+                model.TotalPrice = booking.TotalPrice;
+                return View(model);
+            }
+
+            booking.AmountPaid = model.AmountPaid;
+            booking.PaymentMethod = string.IsNullOrWhiteSpace(model.PaymentMethod) ? null : model.PaymentMethod.Trim();
+            booking.PaymentReference = string.IsNullOrWhiteSpace(model.PaymentReference) ? null : model.PaymentReference.Trim();
+            booking.PaymentDate = model.PaymentDate;
+
+            if (booking.AmountPaid >= booking.TotalPrice)
+            {
+                booking.PaymentStatus = PaymentStatus.Paid;
+                booking.PaymentDate ??= DateTime.UtcNow;
+
+                if (booking.BookingStatus == BookingStatus.Pending)
+                {
+                    booking.BookingStatus = BookingStatus.Confirmed;
+                }
+            }
+            else
+            {
+                // Fully paid automatically sets Paid; otherwise keep admin-selected non-Paid status.
+                booking.PaymentStatus = model.PaymentStatus == PaymentStatus.Paid
+                    ? PaymentStatus.Pending
+                    : model.PaymentStatus;
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -99,27 +183,51 @@ namespace cateredByLetsuwi.Controllers
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
+            {
                 return NotFound();
+            }
 
-            booking.PaymentStatus = paymentStatus;
+            booking.BookingStatus = bookingStatus;
+            booking.PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? booking.PaymentMethod : paymentMethod.Trim();
+            booking.PaymentReference = string.IsNullOrWhiteSpace(paymentReference) ? booking.PaymentReference : paymentReference.Trim();
 
             if (paymentStatus == PaymentStatus.Paid)
             {
-                booking.BookingStatus = BookingStatus.Confirmed;
-                booking.PaymentDate = DateTime.UtcNow;
-                booking.PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? null : paymentMethod.Trim();
-                booking.PaymentReference = string.IsNullOrWhiteSpace(paymentReference) ? null : paymentReference.Trim();
+                booking.AmountPaid = booking.AmountPaid <= 0 ? booking.TotalPrice : booking.AmountPaid;
+                if (booking.AmountPaid >= booking.TotalPrice)
+                {
+                    booking.PaymentStatus = PaymentStatus.Paid;
+                    booking.PaymentDate ??= DateTime.UtcNow;
+                }
+                else
+                {
+                    booking.PaymentStatus = PaymentStatus.Pending;
+                }
             }
             else
             {
-                booking.BookingStatus = bookingStatus;
-                booking.PaymentDate = null;
-                booking.PaymentMethod = null;
-                booking.PaymentReference = null;
+                booking.PaymentStatus = paymentStatus;
+
+                if (paymentStatus != PaymentStatus.Paid)
+                {
+                    booking.PaymentDate = paymentStatus == PaymentStatus.Pending ? booking.PaymentDate : null;
+                }
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private static decimal GetCollectedAmount(Booking booking)
+        {
+            if (booking.AmountPaid > 0)
+            {
+                return booking.AmountPaid;
+            }
+
+            return booking.PaymentStatus == PaymentStatus.Paid
+                ? booking.TotalPrice
+                : 0m;
         }
 
         private void PopulateServicesDropDownList(object? selectedService = null)

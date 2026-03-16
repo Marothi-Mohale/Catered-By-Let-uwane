@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using cateredByLetsuwi.Data;
+using cateredByLetsuwi.Models;
+using cateredByLetsuwi.Models.Enums;
 using cateredByLetsuwi.Models.ViewModels;
 
 namespace cateredByLetsuwi.Controllers
@@ -37,18 +39,16 @@ namespace cateredByLetsuwi.Controllers
                 .Include(b => b.Service)
                 .ToListAsync();
 
-            var totalBookings = bookings.Count;
-            var upcomingBookings = bookings.Count(b => b.EventDate >= now);
-            var unpaidBookings = bookings.Count(b => b.PaymentStatus != Models.Enums.PaymentStatus.Paid);
-
-            var totalRevenue = bookings.Sum(b => b.TotalPrice);
+            // In-memory aggregation keeps SQLite decimal behavior predictable.
+            var totalRevenue = bookings.Sum(GetCollectedAmount);
             var revenueThisMonth = bookings
                 .Where(b => b.BookingDate >= startOfMonth)
-                .Sum(b => b.TotalPrice);
+                .Sum(GetCollectedAmount);
 
-            var averageBookingValue = totalBookings > 0
-                ? totalRevenue / totalBookings
-                : 0;
+            var totalBookings = bookings.Count;
+            var upcomingBookings = bookings.Count(b => b.EventDate >= now);
+            var unpaidBookings = bookings.Count(b => b.PaymentStatus != PaymentStatus.Paid);
+            var averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
             var mostPopularService = bookings
                 .Where(b => b.Service != null)
@@ -67,6 +67,18 @@ namespace cateredByLetsuwi.Controllers
                 AverageBookingValue = averageBookingValue,
                 MostPopularService = mostPopularService
             };
+        }
+
+        private static decimal GetCollectedAmount(Booking booking)
+        {
+            if (booking.AmountPaid > 0)
+            {
+                return booking.AmountPaid;
+            }
+
+            return booking.PaymentStatus == PaymentStatus.Paid
+                ? booking.TotalPrice
+                : 0m;
         }
     }
 }

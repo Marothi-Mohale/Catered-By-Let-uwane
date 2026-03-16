@@ -14,29 +14,19 @@
 }
 
 <div class="container-fluid mt-4">
-
-    <!-- ========================= -->
-    <!-- PAGE HEADER -->
-    <!-- ========================= -->
     <div class="row mb-4">
         <div class="col">
             <h2 class="fw-bold">Booking Management Dashboard</h2>
-            <p class="text-muted">Operational overview of all catering bookings</p>
+            <p class="text-muted">Operational overview of bookings and payments</p>
         </div>
     </div>
 
-    <!-- ========================= -->
-    <!-- KPI CARDS -->
-    <!-- ========================= -->
     <div class="row g-4 mb-4">
-
         <div class="col-md-3">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h6 class="text-muted">Total Revenue (Paid)</h6>
-                    <h3 class="fw-bold text-success">
-                        R @totalRevenue.ToString("N2")
-                    </h3>
+                    <h6 class="text-muted">Total Revenue (Collected)</h6>
+                    <h3 class="fw-bold text-success">R @totalRevenue.ToString("N2")</h3>
                 </div>
             </div>
         </div>
@@ -45,9 +35,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="text-muted">Outstanding Revenue</h6>
-                    <h3 class="fw-bold text-danger">
-                        R @outstandingRevenue.ToString("N2")
-                    </h3>
+                    <h3 class="fw-bold text-danger">R @outstandingRevenue.ToString("N2")</h3>
                 </div>
             </div>
         </div>
@@ -56,9 +44,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="text-muted">Total Bookings</h6>
-                    <h3 class="fw-bold">
-                        @totalBookings
-                    </h3>
+                    <h3 class="fw-bold">@totalBookings</h3>
                 </div>
             </div>
         </div>
@@ -67,24 +53,16 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h6 class="text-muted">Pending Bookings</h6>
-                    <h3 class="fw-bold text-warning">
-                        @pendingBookings
-                    </h3>
+                    <h3 class="fw-bold text-warning">@pendingBookings</h3>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- ========================= -->
-    <!-- BOOKINGS TABLE -->
-    <!-- ========================= -->
     <div class="card shadow-sm border-0">
         <div class="card-body">
-
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-
                     <thead class="table-light">
                         <tr>
                             <th>Customer</th>
@@ -101,7 +79,6 @@
                     <tbody>
                         @foreach (var booking in Model)
                         {
-                            var balance = booking.TotalPrice - booking.AmountPaid;
                             var paidPercent = booking.TotalPrice == 0
                                 ? 0
                                 : (booking.AmountPaid / booking.TotalPrice) * 100;
@@ -114,13 +91,9 @@
 
                                 <td>@booking.Service?.Name</td>
 
-                                <td>
-                                    @booking.EventDate.ToString("dd MMM yyyy")
-                                </td>
+                                <td>@booking.EventDate.ToString("dd MMM yyyy")</td>
 
-                                <td>
-                                    R @booking.TotalPrice.ToString("N2")
-                                </td>
+                                <td>R @booking.TotalPrice.ToString("N2")</td>
 
                                 <td>
                                     <div class="progress" style="height: 8px;">
@@ -132,10 +105,7 @@
                                              aria-valuemax="100">
                                         </div>
                                     </div>
-                                    <small>
-                                        R @booking.AmountPaid.ToString("N2")
-                                        / R @booking.TotalPrice.ToString("N2")
-                                    </small>
+                                    <small>R @booking.AmountPaid.ToString("N2") / R @booking.TotalPrice.ToString("N2")</small>
                                 </td>
 
                                 <td>
@@ -166,50 +136,50 @@
                                     {
                                         <span class="badge bg-warning text-dark">Pending</span>
                                     }
+                                    else if (booking.PaymentStatus == PaymentStatus.Refunded)
+                                    {
+                                        <span class="badge bg-info text-dark">Refunded</span>
+                                    }
                                     else
                                     {
-                                        <span class="badge bg-danger">Unpaid</span>
+                                        <span class="badge bg-danger">Failed</span>
                                     }
                                 </td>
 
-                                <td class="text-end">
+                                <td class="text-end" style="min-width: 220px;">
+                                    <a asp-action="RecordPayment" asp-route-id="@booking.Id" class="btn btn-sm btn-luxury-outline mb-2 w-100">
+                                        Record Payment
+                                    </a>
+
                                     <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@booking.Id" />
 
                                         <select name="bookingStatus" class="form-select form-select-sm mb-1">
                                             @foreach (BookingStatus status in Enum.GetValues(typeof(BookingStatus)))
                                             {
-                                                <option value="@status"
-                                                        selected="@(booking.BookingStatus == status)">
-                                                    @status
-                                                </option>
+                                                <option value="@status" selected="@(booking.BookingStatus == status)">@status</option>
                                             }
                                         </select>
 
                                         <select name="paymentStatus" class="form-select form-select-sm mb-1">
                                             @foreach (PaymentStatus status in Enum.GetValues(typeof(PaymentStatus)))
                                             {
-                                                <option value="@status"
-                                                        selected="@(booking.PaymentStatus == status)">
-                                                    @status
-                                                </option>
+                                                <option value="@status" selected="@(booking.PaymentStatus == status)">@status</option>
                                             }
                                         </select>
 
-                                        <button type="submit"
-                                                class="btn btn-sm btn-outline-dark w-100">
-                                            Update
-                                        </button>
+                                        <input name="paymentMethod" class="form-control form-control-sm mb-1" placeholder="Method" value="@booking.PaymentMethod" />
+                                        <input name="paymentReference" class="form-control form-control-sm mb-2" placeholder="Reference" value="@booking.PaymentReference" />
+
+                                        <button type="submit" class="btn btn-sm btn-outline-dark w-100">Update Status</button>
                                     </form>
                                 </td>
                             </tr>
                         }
                     </tbody>
-
                 </table>
             </div>
-
         </div>
     </div>
-
 </div>

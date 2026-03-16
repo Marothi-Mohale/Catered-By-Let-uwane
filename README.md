@@ -70,3 +70,27 @@ ASP.NET Core MVC (Controllers/Views)
            v
          SQLite
 ```
+
+## Render Deployment (Docker)
+Use a **Web Service** with **Runtime = Docker**.
+
+### Required Render Environment Variables
+```bash
+ASPNETCORE_ENVIRONMENT=Production
+AdminAccount__Username=marothi
+AdminAccount__Password=1143828wits
+ConnectionStrings__DefaultConnection=Data Source=/var/data/catering.db
+```
+
+### Persistent Disk (SQLite)
+Attach a persistent disk and mount it to:
+
+```bash
+/var/data
+```
+
+This keeps `catering.db` across deploys/restarts.
+
+### Notes
+- Render sets `PORT`; Docker `CMD` binds to `0.0.0.0:$PORT` automatically.
+- After first deploy, open `/Auth/Login` to verify admin access.

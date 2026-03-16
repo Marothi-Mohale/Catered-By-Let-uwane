@@ -1,0 +1,23 @@
+.git
+.gitignore
+.vscode
+.devcontainer
+
+**/bin
+**/obj
+**/TestResults
+
+**/*.user
+**/*.suo
+**/*.cache
+
+# Local databases and transient sqlite files
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite3
+
+# Local tooling and OS noise
+**/.DS_Store
+**/Thumbs.db

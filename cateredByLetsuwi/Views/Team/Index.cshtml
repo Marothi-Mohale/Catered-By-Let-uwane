@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Meet the Team";
+}
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <p class="lux-kicker text-dark mb-2">Catered By Letsuwi</p>
+            <h1 class="lux-heading">Meet The Team</h1>
+            <p class="text-secondary mb-0">The people behind the experience.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <article class="lux-card overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            <div class="lux-photo-wrap rounded-0 border-0 h-100" style="min-height: 360px;">
+                                <img
+                                    class="img-fluid lux-photo"
+                                    src="@Url.Content("~/images/matshiwane-mohale.jpg")"
+                                    alt="Miss Matshiwane Mohale, owner of Catered By Letsuwi"
+                                    onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');" />
+                                <div class="lux-image-placeholder d-none h-100" role="img" aria-label="Image placeholder for Miss Matshiwane Mohale">
+                                    Add: /images/matshiwane-mohale.jpg
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="p-4 p-lg-5">
+                                <p class="text-uppercase small text-secondary mb-2" style="letter-spacing: .14em;">Founder & Owner</p>
+                                <h2 class="h3 mb-2">Miss Matshiwane Mohale</h2>
+
+                                <p class="text-secondary mb-3">
+                                    Miss Matshiwane Mohale is the owner of Catered By Letsuwi, leading the brand with a strong commitment to quality,
+                                    hospitality, and elegant event experiences.
+                                </p>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="lux-pill text-dark border-secondary bg-light">Qualified Dietician</span>
+                                    <span class="lux-pill text-dark border-secondary bg-light">Qualified Chef</span>
+                                </div>
+
+                                <p class="mb-0 text-secondary">
+                                    Her combined expertise in nutrition and culinary arts shapes menus that are both refined and thoughtfully balanced.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>

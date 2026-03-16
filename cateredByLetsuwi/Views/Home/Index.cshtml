@@ -1,137 +1,92 @@
-﻿@{
+@{
     ViewData["Title"] = "Home";
 }
 
-<!-- HERO -->
-<section class="lux-hero d-flex align-items-center">
-    <div class="lux-hero-overlay"></div>
-
-    <div class="container position-relative text-white">
-        <div class="row">
+<section class="lux-hero py-5 py-lg-6">
+    <div class="container">
+        <div class="row align-items-center g-4 g-lg-5">
             <div class="col-lg-7">
-                <p class="lux-kicker mb-2">CATERED BY LETSUWI</p>
-                <h1 class="display-5 fw-semibold mb-3">
-                    Luxury catering for unforgettable moments.
-                </h1>
-
-                <p class="lead lux-muted mb-4">
-                    Crafted menus, elegant presentation, and professional service —
-                    for weddings, corporate events, and private celebrations.
+                <p class="lux-kicker mb-3">Catered By Letsuwi</p>
+                <h1 class="lux-display mb-3">Elevated Catering For Remarkable Events</h1>
+                <p class="lux-lead mb-4">
+                    A refined catering experience with elegant plating, curated menus, and seamless service from planning to presentation.
                 </p>
-
-                <div class="d-flex gap-2 flex-wrap">
-                    <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">
-                        Book Now
-                    </a>
-                    <a class="btn btn-outline-light px-4" asp-controller="Menu" asp-action="Index">
-                        View Menu
-                    </a>
-                    <a class="btn btn-link text-white text-decoration-none px-2" href="#how-it-works">
-                        How it works →
-                    </a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-luxury btn-lg px-4" asp-controller="Bookings" asp-action="Create">Book Your Event</a>
+                    <a class="btn btn-luxury-outline btn-lg px-4" asp-controller="Menu" asp-action="Index">Explore Menu</a>
                 </div>
-
-                <div class="lux-trust mt-4 d-flex flex-wrap gap-3">
-                    <span class="lux-pill">Premium Ingredients</span>
-                    <span class="lux-pill">Professional Staff</span>
-                    <span class="lux-pill">On-time Delivery</span>
+                <div class="d-flex flex-wrap gap-2 mt-4" aria-label="Service highlights">
+                    <span class="lux-pill">Weddings</span>
+                    <span class="lux-pill">Corporate</span>
+                    <span class="lux-pill">Private Dining</span>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="lux-photo-wrap shadow-lg">
+                    <img
+                        class="img-fluid lux-photo"
+                        src="~/images/hero-catering.jpg"
+                        alt="Elegant catering setup with plated dishes"
+                        onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='/images/hero-catering.jpg.jpg';}else{this.style.display='none';this.nextElementSibling.classList.remove('d-none');}" />
+                    <div class="lux-image-placeholder d-none" role="img" aria-label="Image placeholder for catering hero">
+                        Hero image placeholder
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ABOUT / VALUE -->
 <section class="py-5 bg-white">
     <div class="container">
         <div class="row g-4 align-items-center">
             <div class="col-lg-6">
-                <h2 class="fw-semibold mb-3">A premium experience, from first bite to final detail.</h2>
-                <p class="text-secondary mb-4">
-                    We bring refined catering to your event — balanced flavours, beautiful plating,
-                    and smooth coordination so you can host with confidence.
-                </p>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="lux-card p-4 h-100">
-                            <div class="lux-icon mb-2">✦</div>
-                            <div class="fw-semibold">Custom Menus</div>
-                            <div class="text-secondary small">Designed for your event type & guest count.</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="lux-card p-4 h-100">
-                            <div class="lux-icon mb-2">✦</div>
-                            <div class="fw-semibold">Elegant Presentation</div>
-                            <div class="text-secondary small">Modern styling that looks as good as it tastes.</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="lux-card p-4 h-100">
-                            <div class="lux-icon mb-2">✦</div>
-                            <div class="fw-semibold">Reliable Service</div>
-                            <div class="text-secondary small">Clear communication & on-time execution.</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="lux-card p-4 h-100">
-                            <div class="lux-icon mb-2">✦</div>
-                            <div class="fw-semibold">Event Ready</div>
-                            <div class="text-secondary small">Weddings, corporate, birthdays, private dining.</div>
-                        </div>
+                <div class="lux-photo-wrap h-100">
+                    <img
+                        class="img-fluid lux-photo"
+                        src="~/images/home-plating.jpg"
+                        alt="Fine plated cuisine detail"
+                        onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');" />
+                    <div class="lux-image-placeholder d-none" role="img" aria-label="Image placeholder for plated cuisine">
+                        Plating image placeholder
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-6">
-                <div class="lux-image-card">
-                    <img class="img-fluid rounded-4 shadow"
-                         src="~/images/home-catering.jpg"
-                         alt="Elegant catering presentation" />
+                <h2 class="h1 lux-heading mb-3">Luxury In Every Detail</h2>
+                <p class="text-secondary mb-4">
+                    We pair premium ingredients with disciplined execution so each course feels intentional, memorable, and worthy of your occasion.
+                </p>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="lux-card h-100 p-3">
+                            <h3 class="h6 mb-1">Curated Menus</h3>
+                            <p class="mb-0 text-secondary small">Built around your guest profile and event style.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="lux-card h-100 p-3">
+                            <h3 class="h6 mb-1">Elegant Presentation</h3>
+                            <p class="mb-0 text-secondary small">Modern service aesthetics with polished execution.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="lux-card h-100 p-3">
+                            <h3 class="h6 mb-1">Professional Team</h3>
+                            <p class="mb-0 text-secondary small">Reliable communication and on-time coordination.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="lux-card h-100 p-3">
+                            <h3 class="h6 mb-1">Event Confidence</h3>
+                            <p class="mb-0 text-secondary small">From intimate tables to large formal functions.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-secondary small mt-2">
-                    Tip: Save a second image as <code>wwwroot/images/home-plating.jpg</code>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how-it-works" class="py-5 lux-soft">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="fw-semibold mb-2">How it works</h2>
-            <p class="text-secondary mb-0">A simple booking flow — professional delivery.</p>
-        </div>
-
-        <div class="row g-3">
-            <div class="col-md-4">
-                <div class="lux-card p-4 h-100">
-                    <div class="lux-step">1</div>
-                    <div class="fw-semibold mb-1">Choose a service</div>
-                    <div class="text-secondary">Browse the menu and select your catering option.</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="lux-card p-4 h-100">
-                    <div class="lux-step">2</div>
-                    <div class="fw-semibold mb-1">Submit your booking</div>
-                    <div class="text-secondary">Event date, guest count, and your details.</div>
+                <div class="mt-4">
+                    <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">Start A Booking</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="lux-card p-4 h-100">
-                    <div class="lux-step">3</div>
-                    <div class="fw-semibold mb-1">We confirm & deliver</div>
-                    <div class="text-secondary">We coordinate and ensure a smooth experience.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">Book Now</a>
         </div>
     </div>
 </section>

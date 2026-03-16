@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Thank You";
+
+    var customerName = (string?)ViewData["CustomerName"];
+    var serviceName = (string?)ViewData["ServiceName"];
+    var eventDate = (string?)ViewData["EventDate"];
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="lux-card p-4 p-lg-5 text-center">
+                <p class="lux-kicker text-dark mb-2">Booking Received</p>
+                <h1 class="h2 lux-heading mb-3">Thank You For Booking With Us</h1>
+
+                <p class="text-secondary mb-4">
+                    Your booking request has been submitted successfully. Our team will review your details and contact you shortly.
+                </p>
+
+                @if (!string.IsNullOrWhiteSpace(customerName) || !string.IsNullOrWhiteSpace(serviceName) || !string.IsNullOrWhiteSpace(eventDate))
+                {
+                    <div class="border rounded-3 p-3 mb-4 bg-light-subtle text-start">
+                        @if (!string.IsNullOrWhiteSpace(customerName))
+                        {
+                            <div><strong>Name:</strong> @customerName</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(serviceName))
+                        {
+                            <div><strong>Service:</strong> @serviceName</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(eventDate))
+                        {
+                            <div><strong>Event Date:</strong> @eventDate</div>
+                        }
+                    </div>
+                }
+
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a class="btn btn-luxury px-4" asp-controller="Home" asp-action="Index">Go To Home</a>
+                    <a class="btn btn-luxury-outline px-4" asp-controller="Menu" asp-action="Index">Explore Menu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

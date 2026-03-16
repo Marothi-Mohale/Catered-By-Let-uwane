@@ -43,6 +43,15 @@ namespace cateredByLetsuwi.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public IActionResult ThankYou()
+        {
+            ViewData["CustomerName"] = TempData.Peek("BookingCustomerName") as string;
+            ViewData["ServiceName"] = TempData.Peek("BookingServiceName") as string;
+            ViewData["EventDate"] = TempData.Peek("BookingEventDate") as string;
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -78,7 +87,11 @@ namespace cateredByLetsuwi.Controllers
             _context.Add(booking);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Create));
+            TempData["BookingCustomerName"] = booking.CustomerName;
+            TempData["BookingServiceName"] = service.Name;
+            TempData["BookingEventDate"] = booking.EventDate.ToString("dd MMM yyyy");
+
+            return RedirectToAction(nameof(ThankYou));
         }
 
         [HttpGet]

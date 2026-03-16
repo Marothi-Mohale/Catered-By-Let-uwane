@@ -2,6 +2,16 @@
 
 @{
     ViewData["Title"] = "Menu";
+
+    var serviceImageMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Bespoke Wedding Banquet"] = "wedding-banquet.jpg",
+        ["Executive Corporate Dining"] = "corporate-dining.jpg",
+        ["Private Chef Table Experience"] = "private-chef-table.jpg",
+        ["Cocktail Reception Collection"] = "cocktail-reception.jpg",
+        ["Heritage Celebration Feast"] = "heritage-feast.jpg",
+        ["Luxury Garden Brunch"] = "garden-brunch.jpg"
+    };
 }
 
 <section class="lux-menu-hero py-5 mb-4">
@@ -47,18 +57,35 @@
             <div class="row g-4">
                 @foreach (var item in Model)
                 {
+                    var imageFile = serviceImageMap.TryGetValue(item.Name, out var mapped)
+                        ? mapped
+                        : "menu-hero.jpg.jpg";
+
                     <div class="col-md-6 col-xl-4">
-                        <article class="lux-card h-100 p-4">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-                                <h3 class="h5 mb-0">@item.Name</h3>
-                                <span class="lux-price">R @item.Price.ToString("N2")</span>
+                        <article class="lux-card h-100 overflow-hidden">
+                            <div class="lux-photo-wrap rounded-0 border-0" style="min-height: 220px;">
+                                <img
+                                    class="img-fluid lux-photo"
+                                    src="~/images/@imageFile"
+                                    alt="@item.Name catering presentation"
+                                    onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');" />
+                                <div class="lux-image-placeholder d-none" role="img" aria-label="Image placeholder for @item.Name">
+                                    @item.Name image placeholder
+                                </div>
                             </div>
 
-                            <p class="text-secondary mb-4">@item.Description</p>
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                                    <h3 class="h5 mb-0">@item.Name</h3>
+                                    <span class="lux-price">R @item.Price.ToString("N2")</span>
+                                </div>
 
-                            <a class="btn btn-luxury-outline w-100" asp-controller="Bookings" asp-action="Create" aria-label="Book @item.Name catering service">
-                                Book This Service
-                            </a>
+                                <p class="text-secondary mb-4">@item.Description</p>
+
+                                <a class="btn btn-luxury-outline w-100" asp-controller="Bookings" asp-action="Create" aria-label="Book @item.Name catering service">
+                                    Book This Service
+                                </a>
+                            </div>
                         </article>
                     </div>
                 }

@@ -1,8 +1,10 @@
 # Catered-By-Let-uwane
 
-## Live Demo
+## Deployment
 
-[View the live app](https://catered-by-let-uwane-2.onrender.com/)
+The application is live here:
+
+[https://catered-by-let-uwane-2.onrender.com/](https://catered-by-let-uwane-2.onrender.com/)
 
 ## Quick Start (Local)
 From the repo root:

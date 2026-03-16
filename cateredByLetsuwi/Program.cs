@@ -73,11 +73,11 @@ var app = builder.Build();
 
 app.Logger.LogInformation("SQLite database path resolved to: {DbPath}", resolvedDbPath);
 
-if (app.Environment.IsDevelopment())
+// Always apply migrations and sync service catalog on startup.
+// This prevents missing-table runtime errors on fresh deploys (e.g., Render).
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
     await db.Database.MigrateAsync();
 
     var luxuryCatalog = new[]

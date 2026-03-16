@@ -12,8 +12,14 @@
     <header>
         <nav class="navbar navbar-expand-lg lux-navbar sticky-top" aria-label="Main navigation">
             <div class="container-fluid px-3 px-lg-4">
-                <a class="navbar-brand lux-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    Catered By Letsuwi
+                <a class="navbar-brand lux-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Catered By Letsuwi home">
+                    <img
+                        class="lux-brand-logo"
+                        src="@Url.Content("~/images/letsuwi_logo.jpg")"
+                        alt="Catered By Letsuwi logo"
+                        onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');" />
+                    <span class="lux-brand-fallback d-none" aria-hidden="true">CBL</span>
+                    <span class="lux-brand-text">Catered By Letsuwi</span>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"

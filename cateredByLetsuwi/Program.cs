@@ -1,5 +1,6 @@
 using cateredByLetsuwi.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,38 +8,30 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC
 builder.Services.AddControllersWithViews();
 
-// ===============================
-// ✅ SQLite path fix (absolute DB path)
-// ===============================
+// SQLite: force a single stable absolute DB path under ContentRootPath when relative.
 var rawConn = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=catering.db";
+var sqliteBuilder = new SqliteConnectionStringBuilder(rawConn);
 
-// If the connection string already contains "Data Source=..."
-var dataSourcePrefix = "Data Source=";
-
-// Extract the DB path (works for "Data Source=catering.db" and "Data Source=/abs/path.db")
-var dbPathPart = rawConn;
-var prefixIndex = rawConn.IndexOf(dataSourcePrefix, StringComparison.OrdinalIgnoreCase);
-if (prefixIndex >= 0)
+if (string.IsNullOrWhiteSpace(sqliteBuilder.DataSource))
 {
-    dbPathPart = rawConn.Substring(prefixIndex + dataSourcePrefix.Length).Trim();
+    sqliteBuilder.DataSource = "catering.db";
 }
 
-// If it's relative, convert to absolute using the project folder (ContentRootPath)
-if (!Path.IsPathRooted(dbPathPart))
+var resolvedDbPath = sqliteBuilder.DataSource;
+if (!string.Equals(resolvedDbPath, ":memory:", StringComparison.OrdinalIgnoreCase) &&
+    !Path.IsPathRooted(resolvedDbPath))
 {
-    dbPathPart = Path.Combine(builder.Environment.ContentRootPath, dbPathPart);
+    resolvedDbPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, resolvedDbPath));
+    sqliteBuilder.DataSource = resolvedDbPath;
 }
 
-// Rebuild a clean, absolute SQLite connection string
-var fixedConn = $"{dataSourcePrefix}{dbPathPart}";
+var fixedConn = sqliteBuilder.ConnectionString;
 
 // DB
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(fixedConn));
 
-// ===============================
-// ✅ Cookie Authentication (Admin login)
-// ===============================
+// Cookie Authentication (Admin login)
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -50,9 +43,7 @@ builder.Services
         options.SlidingExpiration = true;
     });
 
-// ===============================
-// ✅ Authorization Policy: AdminOnly
-// ===============================
+// Authorization Policy: AdminOnly
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
@@ -60,6 +51,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
+app.Logger.LogInformation("SQLite database path resolved to: {DbPath}", resolvedDbPath);
 
 if (!app.Environment.IsDevelopment())
 {
@@ -72,7 +65,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ✅ must be in this order
 app.UseAuthentication();
 app.UseAuthorization();
 

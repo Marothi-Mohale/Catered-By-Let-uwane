@@ -1,8 +1,137 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- HERO -->
+<section class="lux-hero d-flex align-items-center">
+    <div class="lux-hero-overlay"></div>
+
+    <div class="container position-relative text-white">
+        <div class="row">
+            <div class="col-lg-7">
+                <p class="lux-kicker mb-2">CATERED BY LETSUWI</p>
+                <h1 class="display-5 fw-semibold mb-3">
+                    Luxury catering for unforgettable moments.
+                </h1>
+
+                <p class="lead lux-muted mb-4">
+                    Crafted menus, elegant presentation, and professional service —
+                    for weddings, corporate events, and private celebrations.
+                </p>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">
+                        Book Now
+                    </a>
+                    <a class="btn btn-outline-light px-4" asp-controller="Menu" asp-action="Index">
+                        View Menu
+                    </a>
+                    <a class="btn btn-link text-white text-decoration-none px-2" href="#how-it-works">
+                        How it works →
+                    </a>
+                </div>
+
+                <div class="lux-trust mt-4 d-flex flex-wrap gap-3">
+                    <span class="lux-pill">Premium Ingredients</span>
+                    <span class="lux-pill">Professional Staff</span>
+                    <span class="lux-pill">On-time Delivery</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT / VALUE -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-semibold mb-3">A premium experience, from first bite to final detail.</h2>
+                <p class="text-secondary mb-4">
+                    We bring refined catering to your event — balanced flavours, beautiful plating,
+                    and smooth coordination so you can host with confidence.
+                </p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="lux-card p-4 h-100">
+                            <div class="lux-icon mb-2">✦</div>
+                            <div class="fw-semibold">Custom Menus</div>
+                            <div class="text-secondary small">Designed for your event type & guest count.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="lux-card p-4 h-100">
+                            <div class="lux-icon mb-2">✦</div>
+                            <div class="fw-semibold">Elegant Presentation</div>
+                            <div class="text-secondary small">Modern styling that looks as good as it tastes.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="lux-card p-4 h-100">
+                            <div class="lux-icon mb-2">✦</div>
+                            <div class="fw-semibold">Reliable Service</div>
+                            <div class="text-secondary small">Clear communication & on-time execution.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="lux-card p-4 h-100">
+                            <div class="lux-icon mb-2">✦</div>
+                            <div class="fw-semibold">Event Ready</div>
+                            <div class="text-secondary small">Weddings, corporate, birthdays, private dining.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="lux-image-card">
+                    <img class="img-fluid rounded-4 shadow"
+                         src="~/images/home-catering.jpg"
+                         alt="Elegant catering presentation" />
+                </div>
+                <div class="text-secondary small mt-2">
+                    Tip: Save a second image as <code>wwwroot/images/home-plating.jpg</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="py-5 lux-soft">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-semibold mb-2">How it works</h2>
+            <p class="text-secondary mb-0">A simple booking flow — professional delivery.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="lux-card p-4 h-100">
+                    <div class="lux-step">1</div>
+                    <div class="fw-semibold mb-1">Choose a service</div>
+                    <div class="text-secondary">Browse the menu and select your catering option.</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lux-card p-4 h-100">
+                    <div class="lux-step">2</div>
+                    <div class="fw-semibold mb-1">Submit your booking</div>
+                    <div class="text-secondary">Event date, guest count, and your details.</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="lux-card p-4 h-100">
+                    <div class="lux-step">3</div>
+                    <div class="fw-semibold mb-1">We confirm & deliver</div>
+                    <div class="text-secondary">We coordinate and ensure a smooth experience.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">Book Now</a>
+        </div>
+    </div>
+</section>

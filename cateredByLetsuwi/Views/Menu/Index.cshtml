@@ -1,18 +1,77 @@
 @model IEnumerable<cateredByLetsuwi.Models.Service>
 
-<h2 class="mb-4">Our Catering Services</h2>
+@{
+    ViewData["Title"] = "Menu";
+}
 
-<div class="row">
-@foreach (var item in Model)
-{
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">@item.Name</h5>
-                <p class="card-text">@item.Description</p>
-                <h6 class="text-success">R @item.Price</h6>
+<!-- MENU HERO -->
+<section class="lux-hero lux-hero-sm d-flex align-items-center mb-4">
+    <div class="lux-hero-overlay"></div>
+
+    <div class="container position-relative text-white">
+        <div class="row">
+            <div class="col-lg-8">
+                <p class="lux-kicker mb-2">OUR MENU</p>
+                <h1 class="display-6 fw-semibold mb-2">Catering Services</h1>
+                <p class="lux-muted mb-0">
+                    Premium options designed for elegance, flavour, and unforgettable presentation.
+                </p>
+            </div>
+            <div class="col-lg-4 d-flex align-items-end justify-content-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-luxury px-4" asp-controller="Bookings" asp-action="Create">Book Now</a>
             </div>
         </div>
     </div>
-}
+</section>
+
+<div class="container pb-5">
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="lux-card p-4">
+            <h5 class="fw-semibold mb-1">No services available yet</h5>
+            <p class="text-secondary mb-0">
+                Add services in your database, then they will appear here automatically.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="lux-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h5 class="fw-semibold mb-1">@item.Name</h5>
+                                <div class="text-secondary small">Curated catering service</div>
+                            </div>
+
+                            <span class="lux-price">
+                                R @item.Price
+                            </span>
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <p class="text-secondary mb-4" style="min-height: 54px;">
+                            @item.Description
+                        </p>
+
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-dark flex-grow-1"
+                               asp-controller="Bookings" asp-action="Create">
+                                Book this
+                            </a>
+                            <a class="btn btn-dark flex-grow-1"
+                               asp-controller="Menu" asp-action="Index">
+                                View all
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

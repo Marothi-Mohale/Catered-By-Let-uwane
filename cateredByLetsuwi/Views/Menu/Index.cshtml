@@ -26,7 +26,7 @@
                 <div class="lux-photo-wrap">
                     <img
                         class="img-fluid lux-photo"
-                        src="~/images/menu-hero.jpg"
+                        src="@Url.Content("~/images/menu-hero.jpg")"
                         alt="Luxury catering dishes presented on table"
                         onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='/images/menu-hero.jpg.jpg';}else{this.style.display='none';this.nextElementSibling.classList.remove('d-none');}" />
                     <div class="lux-image-placeholder d-none" role="img" aria-label="Image placeholder for menu hero">
@@ -61,12 +61,14 @@
                         ? mapped
                         : "menu-hero.jpg.jpg";
 
+                    var imagePath = Url.Content($"~/images/{imageFile}");
+
                     <div class="col-md-6 col-xl-4">
                         <article class="lux-card h-100 overflow-hidden">
                             <div class="lux-photo-wrap rounded-0 border-0" style="min-height: 220px;">
                                 <img
                                     class="img-fluid lux-photo"
-                                    src="~/images/@imageFile"
+                                    src="@imagePath"
                                     alt="@item.Name catering presentation"
                                     onerror="this.style.display='none';this.nextElementSibling.classList.remove('d-none');" />
                                 <div class="lux-image-placeholder d-none" role="img" aria-label="Image placeholder for @item.Name">

@@ -26,6 +26,16 @@ if (!string.Equals(resolvedDbPath, ":memory:", StringComparison.OrdinalIgnoreCas
     sqliteBuilder.DataSource = resolvedDbPath;
 }
 
+// Ensure the SQLite folder exists (important for mounted disk paths like /var/data on Render).
+if (!string.Equals(resolvedDbPath, ":memory:", StringComparison.OrdinalIgnoreCase))
+{
+    var dbDirectory = Path.GetDirectoryName(resolvedDbPath);
+    if (!string.IsNullOrWhiteSpace(dbDirectory))
+    {
+        Directory.CreateDirectory(dbDirectory);
+    }
+}
+
 var fixedConn = sqliteBuilder.ConnectionString;
 
 // DB
@@ -73,12 +83,21 @@ var app = builder.Build();
 
 app.Logger.LogInformation("SQLite database path resolved to: {DbPath}", resolvedDbPath);
 
-// Always apply migrations and sync service catalog on startup.
-// This prevents missing-table runtime errors on fresh deploys (e.g., Render).
+// Always initialize DB schema and sync service catalog on startup.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await db.Database.MigrateAsync();
+
+    try
+    {
+        await db.Database.MigrateAsync();
+        app.Logger.LogInformation("Database migrations applied/verified.");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Database migration failed. Falling back to EnsureCreated().");
+        await db.Database.EnsureCreatedAsync();
+    }
 
     var luxuryCatalog = new[]
     {

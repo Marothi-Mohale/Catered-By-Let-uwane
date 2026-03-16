@@ -1,0 +1,39 @@
+# Build outputs
+**/bin/
+**/obj/
+artifacts/
+publish/
+
+# User and IDE files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+
+# Logs and diagnostics
+*.log
+*.tlog
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ASP.NET Core secrets and local config
+secrets.json
+appsettings.*.local.json
+appsettings.Local.json
+
+# Databases and local state
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# EF and tooling caches
+*.cache
+TestResults/
+BenchmarkDotNet.Artifacts/
